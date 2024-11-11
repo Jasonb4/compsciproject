@@ -1,1 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Append Input to Google Sheet</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007BFF;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Google Sheet Input Form</h2>
+    <input type="text" id="userInput" placeholder="Enter something..." required>
+    <button id="submitBtn">Submit</button>
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    const submitBtn = document.getElementById('submitBtn');
+    const userInput = document.getElementById('userInput');
+    const message = document.getElementById('message');
+
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzOjJcgcuvoVjez_-w1av194N4204dqWf-lGWpDosgw2bOa51IrAAr4Yxrn-nSi2QC0TQ/exec';
+
+    submitBtn.addEventListener('click', async () => {
+      const input = userInput.value.trim();
+      if (input === "") {
+        message.textContent = "Please enter a value.";
+        message.style.color = "red";
+        return;
+      }
+
+      message.textContent = "Submitting...";
+      message.style.color = "black";
+
+      try {
+        const response = await fetch(scriptURL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ input })
+        });
+
+        const result = await response.json();
+        if (result.status === "success") {
+          message.textContent = "Data added successfully!";
+          message.style.color = "green";
+          userInput.value = "";
+        } else {
+          message.textContent = `Error: ${result.message}`;
+          message.style.color = "red";
+        }
+      } catch (error) {
+        message.textContent = `Request failed: ${error.message}`;
+        message.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>
 
